@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Innowave 2025 – Feedback</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f0f3f7;
+        color: #333;
+    }
+
+    .header {
+        background: #0d1b2a;
+        color: white;
+        padding: 25px;
+        text-align: center;
+    }
+
+    .container {
+        max-width: 650px;
+        margin: 20px auto;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+
+    input, textarea {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        font-size: 15px;
+    }
+
+    button {
+        background: #1b263b;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        font-size: 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    button:hover {
+        background: #415a77;
+    }
+
+    .comment {
+        background: #edf1f5;
+        padding: 12px;
+        border-radius: 6px;
+        margin-top: 15px;
+        font-size: 14px;
+    }
+
+    .name {
+        font-weight: bold;
+        color: #1b263b;
+    }
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Innowave 2025 – Masterclass</h1>
+    <p>Organized by Christ College, Mysuru</p>
+</div>
+
+<div class="container">
+    <h2>About This Session</h2>
+    <p>
+        This Masterclass is aimed at helping first-year engineering students understand  
+        real industry workflows, career paths, embedded systems, software domains,  
+        and how to start building skills from day one.
+    </p>
+
+    <p>
+        Speaker: <strong>Nishma N J</strong>  
+        <br>Module Lead | Firmware & Embedded Systems  
+        <br>Date: <strong>1st December 2025</strong>
+    </p>
+
+    <hr>
+
+    <h2>Share Your Feedback</h2>
+
+    <input id="name" placeholder="Your Name">
+    <textarea id="feedback" placeholder="Write your feedback here..."></textarea>
+    <button onclick="submitFeedback()">Submit</button>
+
+    <h3 style="margin-top:30px;">All Comments</h3>
+    <div id="comments"></div>
+</div>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+
+<script>
+// --------------------------------------
+// 🔧 Replace this with YOUR Firebase config
+// --------------------------------------
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  databaseURL: "YOUR_DB_URL",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_ID",
+  appId: "YOUR_APP_ID"
+};
+
+// --------------------------------------
+const app = firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+// --------------------------------------
+
+function submitFeedback() {
+    let name = document.getElementById("name").value;
+    let feedback = document.getElementById("feedback").value;
+
+    if (!name || !feedback) {
+        alert("Please enter your name and feedback!");
+        return;
+    }
+
+    db.ref("innowave_feedback/").push({
+        name: name,
+        feedback: feedback,
+        timestamp: Date.now()
+    });
+
+    document.getElementById("name").value = "";
+    document.getElementById("feedback").value = "";
+}
+
+db.ref("innowave_feedback/").on("value", function(snapshot) {
+    let commentsDiv = document.getElementById("comments");
+    commentsDiv.innerHTML = "";
+
+    snapshot.forEach(function(child) {
+        let data = child.val();
+        commentsDiv.innerHTML += `
+            <div class="comment">
+                <div class="name">${data.name}</div>
+                <div>${data.feedback}</div>
+            </div>
+        `;
+    });
+});
+</script>
+
+</body>
+</html>
