@@ -115,5 +115,75 @@ Save this file as `innowave_master_class_profile.html` and open in a browser.
     <footer style="margin-top:18px;color:var(--muted);font-size:13px">Made with ♥ for Innowave • Edit this file to add real links and images.</footer>
   </div>
 </body>
+  <!-- Feedback Section Added -->
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
+const firebaseConfig = {
+apiKey: "AIzaSyCoftkFQbJkbNsIVO9xK-V53I-5lmXS-dg",
+authDomain: "innowave-feedback.firebaseapp.com",
+projectId: "innowave-feedback",
+storageBucket: "innowave-feedback.firebasestorage.app",
+messagingSenderId: "841020171244",
+appId: "1:841020171244:web:1fce162b2f9c87ed43d6c9",
+measurementId: "G-9JH49Y812K"
+};
+
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+
+window.submitFeedback = async function () {
+const name = document.getElementById("name").value.trim() || "Anonymous";
+const feedback = document.getElementById("feedback").value.trim();
+
+
+if (!feedback) {
+document.getElementById("status").innerHTML = "Please enter feedback!";
+return;
+}
+
+
+try {
+await addDoc(collection(db, "feedbacks"), {
+name,
+feedback,
+time: new Date()
+});
+
+
+document.getElementById("status").innerHTML = "Thank you! Feedback submitted ✔";
+document.getElementById("feedback").value = "";
+} catch (error) {
+console.error(error);
+document.getElementById("status").innerHTML = "Error submitting feedback ❌";
+}
+};
+
+
+const q = query(collection(db, "feedbacks"), orderBy("time", "desc"));
+onSnapshot(q, (snapshot) => {
+const commentsDiv = document.getElementById("comments");
+commentsDiv.innerHTML = "";
+
+
+snapshot.forEach(doc => {
+const data = doc.data();
+commentsDiv.innerHTML += `
+<div class="comment">
+<div class="name">${data.name}</div>
+<div>${data.feedback}</div>
+<div class="time">${new Date(data.time.seconds * 1000).toLocaleString()}</div>
+</div>`;
+});
+});
+</script>
+
+
+<!-- END FEEDBACK SECTION -->
+
+
 </html>
 
